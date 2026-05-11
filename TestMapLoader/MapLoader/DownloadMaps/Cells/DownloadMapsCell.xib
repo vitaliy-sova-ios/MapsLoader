@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="DownloadMapsCell" rowHeight="80" id="KGk-i7-Jjw" customClass="DownloadMapsCell" customModule="TestMapLoader" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="405" height="52"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="374.66666666666669" height="52"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="9mH-63-rXH">
+                        <rect key="frame" x="16" y="0.0" width="342.66666666666669" height="52"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="3qJ-vl-jVK">
+                                <rect key="frame" x="0.0" y="0.0" width="342.66666666666669" height="52"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_custom_show_on_map" translatesAutoresizingMaskIntoConstraints="NO" id="jyp-vA-3ej">
+                                        <rect key="frame" x="0.0" y="11" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="Sji-gU-9ro"/>
+                                            <constraint firstAttribute="height" constant="30" id="fsM-8q-pMw"/>
+                                        </constraints>
+                                    </imageView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="kxa-QX-Bsi">
+                                        <rect key="frame" x="46" y="10.999999999999998" width="296.66666666666669" height="30.333333333333329"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="249" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o4Z-Tq-KdS">
+                                                <rect key="frame" x="0.0" y="0.0" width="296.66666666666669" height="20.333333333333332"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <progressView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="B16-IO-vPf">
+                                                <rect key="frame" x="0.0" y="26.333333333333336" width="296.66666666666669" height="4"/>
+                                                <color key="progressTintColor" red="0.3411764705882353" green="0.078431372549019607" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="trackTintColor" red="0.79607843137254897" green="0.7803921568627451" blue="0.81960784313725488" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </progressView>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="kxa-QX-Bsi" firstAttribute="top" relation="greaterThanOrEqual" secondItem="3qJ-vl-jVK" secondAttribute="top" constant="6" id="Iit-FR-cHf"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="kxa-QX-Bsi" secondAttribute="bottom" constant="6" id="LDn-Aa-4eU"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="jyp-vA-3ej" secondAttribute="bottom" constant="11" id="qEP-qG-dET"/>
+                                    <constraint firstItem="jyp-vA-3ej" firstAttribute="top" relation="greaterThanOrEqual" secondItem="3qJ-vl-jVK" secondAttribute="top" constant="11" id="x1Q-ds-a1b"/>
+                                </constraints>
+                            </stackView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FcO-MG-j0h">
+                                <rect key="frame" x="342.66666666666669" y="4" width="44" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="Vnz-G4-cay"/>
+                                    <constraint firstAttribute="width" constant="44" id="Yuh-d8-ZwU"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="ic_custom_download"/>
+                                <connections>
+                                    <action selector="buttonAction:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="0uG-mW-VPx"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </stackView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="9mH-63-rXH" secondAttribute="bottom" priority="999" id="AKI-dp-QnH"/>
+                    <constraint firstAttribute="trailing" secondItem="9mH-63-rXH" secondAttribute="trailing" constant="16" id="Lx3-Wd-Dae"/>
+                    <constraint firstItem="9mH-63-rXH" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="Yow-Oc-TEy"/>
+                    <constraint firstItem="9mH-63-rXH" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" id="e1b-oO-yDp"/>
+                    <constraint firstItem="9mH-63-rXH" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="r09-ob-ZYx"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="button" destination="FcO-MG-j0h" id="0Hp-8p-Otj"/>
+                <outlet property="icon" destination="jyp-vA-3ej" id="QiB-Q3-TXY"/>
+                <outlet property="progressView" destination="B16-IO-vPf" id="gJb-0T-jxY"/>
+                <outlet property="titleLabel" destination="o4Z-Tq-KdS" id="SBR-FI-CJp"/>
+            </connections>
+            <point key="canvasLocation" x="95" y="86"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="ic_custom_download" width="30" height="30"/>
+        <image name="ic_custom_show_on_map" width="30" height="30"/>
+    </resources>
+</document>
