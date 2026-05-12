@@ -39,7 +39,7 @@ actor DMActor {
         bgConfig.httpMaximumConnectionsPerHost = 1
         bgConfig.waitsForConnectivity = true
         bgConfig.sessionSendsLaunchEvents = true
-        bgConfig.isDiscretionary = false
+        bgConfig.isDiscretionary = true
 
         self.sessionBackground = URLSession(configuration: bgConfig,
                                             delegate: sessionDelegate,
@@ -165,7 +165,8 @@ actor DMActor {
         
         var map = [Int: Data]()
         for task in tasks {
-            if let data = await task.cancelByProducingResumeData() {
+            if task.state == .running,
+                let data = await task.cancelByProducingResumeData() {
                 map[task.taskIdentifier] = data
             }
         }

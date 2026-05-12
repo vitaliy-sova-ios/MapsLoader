@@ -9,8 +9,6 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
-    let downloadManager = DMActor(delegate: .init())
-    
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -19,15 +17,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-        let vm = DownloadMapsVM(downloadManager: downloadManager)
-        let rootVC = DownloadMapsVC(viewModel: vm)
-        
-        let navController = UINavigationController(rootViewController: rootVC)
-        
-        window.overrideUserInterfaceStyle = .light
-        window.rootViewController = navController
-        
-        window.makeKeyAndVisible()
+        if let downloadManager = (UIApplication.shared.delegate as? AppDelegate)?.downloadManager {
+            let vm = DownloadMapsVM(downloadManager: downloadManager)
+            let rootVC = DownloadMapsVC(viewModel: vm)
+            
+            let navController = UINavigationController(rootViewController: rootVC)
+            
+            window.overrideUserInterfaceStyle = .light
+            window.rootViewController = navController
+            
+            window.makeKeyAndVisible()
+        }
         
         self.window = window
     }
@@ -51,13 +51,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillEnterForeground(_ scene: UIScene) {
         Task {
-            await downloadManager.appMovedToForeground()
+            await (UIApplication.shared.delegate as? AppDelegate)?.downloadManager.appMovedToForeground()
         }
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         Task {
-            await downloadManager.appMovedToBackground()
+            await (UIApplication.shared.delegate as? AppDelegate)?.downloadManager.appMovedToBackground()
         }
     }
 }
