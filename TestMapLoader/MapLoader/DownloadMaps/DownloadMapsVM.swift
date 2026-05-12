@@ -20,12 +20,12 @@ final class DownloadMapsVM {
     private let parser = RegionsParser()
     private let fileManager = FileProvider()
     
-    let downloadManager: DownloadManager
+    let downloadManager: DMActor
 
     private var items: [DownloadMapsItem] = []
     private var itemsProgress: [DownloadItemProgressModel] = []
     
-    private var bag = Set<AnyCancellable>()
+    private var task: Task<Void, Never>?
     
     var type: ViewModelType
     
@@ -33,22 +33,26 @@ final class DownloadMapsVM {
     let cellUpdatePublisher = PassthroughSubject<CellUpdate, Never>()
     let storageUpdatePublisher = PassthroughSubject<Void, Never>()
     
-    init(downloadManager: DownloadManager, regions: [DownloadMapsItem]? = nil) {
+    init(downloadManager: DMActor, regions: [DownloadMapsItem]? = nil) {
         self.downloadManager = downloadManager
         self.items = regions ?? []
         
         self.type = regions == nil ? .rootRegions : .subRegions
 
-        itemsProgress = downloadManager.getAllItems()
+        Task { @MainActor in
+            itemsProgress = await downloadManager.currentItemsProgress()
+            reloadTablePublisher.send()
+        }
         
-        downloadManager.progressPublisher
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                guard let self else { return }
-                
-                self.updateProgress(for: value)
+        task = Task { [weak self] in
+            guard let self else { return }
+            
+            for await value in downloadManager.progressPublisher.progressStream {
+                await MainActor.run {
+                    self.updateProgress(for: value)
+                }
             }
-            .store(in: &bag)
+        }
     }
     
     //MARK: - Start viewModel
@@ -106,10 +110,12 @@ final class DownloadMapsVM {
         guard let name = item.fileName else {
             return
         }
-        if downloadManager.isExistsItem(name) {
-            downloadManager.cancel(fileName: name)
-        } else {
-            downloadManager.enqueue(fileName: name, url: FileURLBuilder.mapsUrl(for: name))
+        Task {
+            if await downloadManager.isInQueue(fileName: name) {
+                await downloadManager.cancel(fileName: name)
+            } else {
+                await downloadManager.enqueue(fileName: name, url: FileURLBuilder.mapsUrl(for: name))
+            }
         }
     }
     

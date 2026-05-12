@@ -25,11 +25,11 @@ final class NotificationService {
         }
     }
 
-    func showDownloadFinished(fileName: String) {
+    func showDownloadFinished() {
 
         let content = UNMutableNotificationContent()
         content.title = "Download completed"
-        content.body = "\(fileName) downloaded successfully"
+        content.body = "All files downloaded successfully"
         content.sound = .default
 
         let request = UNNotificationRequest(

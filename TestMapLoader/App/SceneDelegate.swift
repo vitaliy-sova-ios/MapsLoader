@@ -9,6 +9,8 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
+    let downloadManager = DMActor(delegate: .init())
+    
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -17,16 +19,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-        if let downloadManager = (UIApplication.shared.delegate as? AppDelegate)?.downloadManager {
-            
-            let vm = DownloadMapsVM(downloadManager: downloadManager)
-            let rootVC = DownloadMapsVC(viewModel: vm)
-            
-            let navController = UINavigationController(rootViewController: rootVC)
-            
-            window.overrideUserInterfaceStyle = .light
-            window.rootViewController = navController
-        }
+        let vm = DownloadMapsVM(downloadManager: downloadManager)
+        let rootVC = DownloadMapsVC(viewModel: vm)
+        
+        let navController = UINavigationController(rootViewController: rootVC)
+        
+        window.overrideUserInterfaceStyle = .light
+        window.rootViewController = navController
         
         window.makeKeyAndVisible()
         
@@ -51,16 +50,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        Task {
+            await downloadManager.appMovedToForeground()
+        }
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        Task {
+            await downloadManager.appMovedToBackground()
+        }
     }
-
-
 }
 
