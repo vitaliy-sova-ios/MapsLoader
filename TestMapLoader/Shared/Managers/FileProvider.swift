@@ -9,21 +9,13 @@ import Foundation
 
 struct FileProvider {
 
-    private let mapsURL: URL
+    private var mapsURL: URL
 
     init() {
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        var url = documentsURL.appendingPathComponent("Maps")
-        do {
-            var values = URLResourceValues()
-            values.isExcludedFromBackup = true
-            try url.setResourceValues(values)
-            
-        } catch {
-            print("Failed to exclude folder from iCloud backup:", error)
-        }
-        self.mapsURL = url
+        self.mapsURL = documentsURL.appendingPathComponent("Maps")
+        
         self.setupDirectory()
     }
     // MARK: - Public
@@ -50,7 +42,7 @@ struct FileProvider {
 
     // MARK: - Private
 
-    private func setupDirectory() {
+    private mutating func setupDirectory() {
         if !FileManager.default.fileExists(atPath: mapsURL.path) {
             do {
                 try FileManager.default.createDirectory(at: mapsURL,
@@ -58,6 +50,15 @@ struct FileProvider {
             } catch {
                 print("Failed to create Maps folder:", error)
             }
+        }
+        
+        do {
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            try mapsURL.setResourceValues(values)
+            
+        } catch {
+            print("Failed to exclude folder from iCloud backup:", error)
         }
     }
 }
