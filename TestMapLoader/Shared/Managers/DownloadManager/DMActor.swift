@@ -283,10 +283,6 @@ actor DMActor {
         
         if session == sessionDefault {
             startNextIfNeeded()
-        } else if items.isEmpty {
-            Task { @MainActor in
-                NotificationService.shared.showDownloadFinished()
-            }
         }
     }
 }
