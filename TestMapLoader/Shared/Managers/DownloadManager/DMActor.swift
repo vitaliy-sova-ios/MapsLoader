@@ -46,6 +46,10 @@ actor DMActor {
                                             delegateQueue: nil)
         
         sessionDelegate.actor = self
+        
+        Task { @MainActor in
+            await getSavedItems()
+        }
     }
     
     // MARK: - Notifications
@@ -157,8 +161,13 @@ actor DMActor {
         task.resume()
     }
     
-    private func restoreDownloads() async {
+    private func getSavedItems() async {
         self.items = await CoreDataManager.shared.fetchAll()
+        sessionDelegate.items = items
+    }
+    
+    private func restoreDownloads() async {
+        await getSavedItems()
         
         let tasks = await sessionBackground.allTasks
             .compactMap { $0 as? URLSessionDownloadTask }
@@ -176,13 +185,19 @@ actor DMActor {
                 
                 let task = sessionDefault.downloadTask(withResumeData: first.value)
                 activeTaskId = task.taskIdentifier
+                
                 items[index].taskId = task.taskIdentifier
                 saveItem(items[index])
+                
                 task.resume()
             }
         } else {
             activeTaskId = nil
             startNextIfNeeded()
+        }
+        
+        items.forEach { item in
+            updateProgress(item)
         }
     }
     
