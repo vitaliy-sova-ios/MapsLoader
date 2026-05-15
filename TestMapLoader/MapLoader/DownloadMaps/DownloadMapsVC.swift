@@ -34,6 +34,10 @@ class DownloadMapsVC: UIViewController {
     
     private var bag = Set<AnyCancellable>()
     
+    deinit {
+        debugPrint("DEINIT: DownloadMapsVC")
+    }
+    
     init (viewModel: DownloadMapsVM) {
         vm = viewModel
         
@@ -125,6 +129,8 @@ class DownloadMapsVC: UIViewController {
                 if let cell = self?.tableView.cellForRow(at: value.indexPath) as? DownloadMapsCell {
                     cell.updateStatus(value.status)
                 }
+                
+                guard self?.tableView.window != nil else { return }
                 switch value.status {
                     
                 case .idle, .ready:

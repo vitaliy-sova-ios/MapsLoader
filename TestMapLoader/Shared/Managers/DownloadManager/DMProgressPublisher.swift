@@ -5,32 +5,37 @@
 //  Created by Vitaliy on 12.05.2026.
 //
 
+import Foundation
+
 actor DMProgressPublisher {
-
+    
     // MARK: - Stream bridge
-
-    private var continuation: AsyncStream<DownloadItemProgressModel>.Continuation?
-
-    let progressStream: AsyncStream<DownloadItemProgressModel>
-
-    init() {
-
-        var continuationRef: AsyncStream<DownloadItemProgressModel>.Continuation?
-
-        self.progressStream = AsyncStream { continuation in
-            continuationRef = continuation
+    
+    private var continuations: [UUID: AsyncStream<DownloadItemProgressModel>.Continuation] = [:]
+    
+    func stream() -> AsyncStream<DownloadItemProgressModel> {
+        
+        let id = UUID()
+        
+        return AsyncStream { continuation in
+            
+            continuations[id] = continuation
+            
+            continuation.onTermination = { [weak self] _ in
+                Task {
+                    await self?.removeContinuation(id)
+                }
+            }
         }
-
-        self.continuation = continuationRef
     }
-
-    // MARK: - Public API
-
+    
+    private func removeContinuation(_ id: UUID) {
+        continuations.removeValue(forKey: id)
+    }
+    
     func emitProgress(_ model: DownloadItemProgressModel) {
-        continuation?.yield(model)
-    }
-
-    func finishStream() {
-        continuation?.finish()
+        for continuation in continuations.values {
+            continuation.yield(model)
+        }
     }
 }

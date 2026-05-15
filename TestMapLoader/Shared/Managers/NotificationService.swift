@@ -6,6 +6,7 @@
 //
 
 import UserNotifications
+import UIKit
 
 final class NotificationService {
 
@@ -31,6 +32,7 @@ final class NotificationService {
         content.title = "Download completed"
         content.body = "All files downloaded successfully"
         content.sound = .default
+        content.badge = 1
 
         let request = UNNotificationRequest(
             identifier: UUID().uuidString,
@@ -39,5 +41,15 @@ final class NotificationService {
         )
 
         UNUserNotificationCenter.current().add(request)
+    }
+    
+    func removeAllNotifications() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        
+        if #available(iOS 16.0, *) {
+            UNUserNotificationCenter.current().setBadgeCount(0)
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
     }
 }

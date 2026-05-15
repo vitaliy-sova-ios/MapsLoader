@@ -33,6 +33,11 @@ final class DownloadMapsVM {
     let cellUpdatePublisher = PassthroughSubject<CellUpdate, Never>()
     let storageUpdatePublisher = PassthroughSubject<Void, Never>()
     
+    deinit {
+        debugPrint("DEINIT")
+        task?.cancel()
+    }
+    
     init(downloadManager: DMActor, regions: [DownloadMapsItem]? = nil) {
         self.downloadManager = downloadManager
         self.items = regions ?? []
@@ -45,9 +50,12 @@ final class DownloadMapsVM {
         }
         
         task = Task { [weak self] in
-            guard let self else { return }
+            let stream = await downloadManager.progressPublisher.stream()
             
-            for await value in downloadManager.progressPublisher.progressStream {
+            for await value in stream {
+                
+                guard let self, !Task.isCancelled else { return }
+                
                 await MainActor.run {
                     self.updateProgress(for: value)
                 }

@@ -45,11 +45,9 @@ actor DMActor {
                                             delegate: sessionDelegate,
                                             delegateQueue: nil)
         
-        sessionDelegate.actor = self
+        self.items = DMActorStorage.getSavedItems()
         
-        Task { @MainActor in
-            await getSavedItems()
-        }
+        sessionDelegate.actor = self
     }
     
     // MARK: - Notifications
@@ -76,7 +74,7 @@ actor DMActor {
         items.append(item)
         
         //save to storage
-        saveItem(item)
+        DMActorStorage.saveAllItems(items)
         //progress
         updateProgress(item)
         
@@ -99,8 +97,8 @@ actor DMActor {
 
         items.remove(at: index)
         
-        //remove from storage
-        removeItem(item)
+        //save to storage
+        DMActorStorage.saveAllItems(items)
         //progress
         updateProgress(item)
         
@@ -117,26 +115,6 @@ actor DMActor {
     
     func isInQueue(fileName: String) -> Bool {
         items.contains(where: { $0.fileName == fileName })
-    }
-    
-    // MARK: - Save tasks to storage
-    
-    private func saveItem(_ item: DownloadItemModel) {
-        Task {
-            await CoreDataManager.shared.saveTask(item)
-        }
-    }
-    
-    private func saveAllItems(_ items: [DownloadItemModel]) {
-        Task {
-            await CoreDataManager.shared.saveTasks(items)
-        }
-    }
-    
-    private func removeItem(_ item: DownloadItemModel) {
-        Task {
-            await CoreDataManager.shared.removeTask(byName: item.fileName)
-        }
     }
 
     // MARK: - Core logic
@@ -156,18 +134,14 @@ actor DMActor {
         items[0].status = .downloading
         activeTaskId = task.taskIdentifier
         
-        sessionDelegate.items = items
+        //save to storage
+        DMActorStorage.saveAllItems(items)
 
         task.resume()
     }
     
-    private func getSavedItems() async {
-        self.items = await CoreDataManager.shared.fetchAll()
-        sessionDelegate.items = items
-    }
-    
     private func restoreDownloads() async {
-        await getSavedItems()
+        items = DMActorStorage.getSavedItems()
         
         let tasks = await sessionBackground.allTasks
             .compactMap { $0 as? URLSessionDownloadTask }
@@ -187,7 +161,8 @@ actor DMActor {
                 activeTaskId = task.taskIdentifier
                 
                 items[index].taskId = task.taskIdentifier
-                saveItem(items[index])
+                //save to storage
+                DMActorStorage.saveAllItems(items)
                 
                 task.resume()
             }
@@ -235,9 +210,8 @@ actor DMActor {
             }
         }
 
-        saveAllItems(items)
-        
-        sessionDelegate.items = items
+        //save to storage
+        DMActorStorage.saveAllItems(items)
         
         backgroundTasks.forEach { $0.resume() }
     }
@@ -276,8 +250,8 @@ actor DMActor {
         items.remove(at: index)
         activeTaskId = nil
         
-        //remove from storage
-        removeItem(item)
+        //save to storage
+        DMActorStorage.saveAllItems(items)
         //progress
         updateProgress(item)
         
@@ -292,7 +266,6 @@ final class DMDelegate: NSObject, URLSessionDownloadDelegate {
     private let fileProvider = FileProvider()
     
     var actor: DMActor?
-    var items: [DownloadItemModel] = []
 
     func urlSession(_ session: URLSession,
                     downloadTask: URLSessionDownloadTask,
@@ -314,9 +287,9 @@ final class DMDelegate: NSObject, URLSessionDownloadDelegate {
                     downloadTask: URLSessionDownloadTask,
                     didFinishDownloadingTo location: URL) {
 
-        guard let item = items.first(where: { $0.taskId == downloadTask.taskIdentifier }) else { return }
+        guard let name = DMActorStorage.getItemName(by: downloadTask.taskIdentifier) else { return }
         
-        _ = try? fileProvider.moveFileToDocuments(from: location, fileName: item.fileName)
+        _ = try? fileProvider.moveFileToDocuments(from: location, fileName: name)
     }
 
     func urlSession(_ session: URLSession,
@@ -341,3 +314,4 @@ final class DMDelegate: NSObject, URLSessionDownloadDelegate {
         }
     }
 }
+

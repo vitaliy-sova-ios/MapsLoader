@@ -53,6 +53,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         Task {
             await (UIApplication.shared.delegate as? AppDelegate)?.downloadManager.appMovedToForeground()
         }
+        
+        NotificationService.shared.removeAllNotifications()
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {

@@ -9,14 +9,14 @@ import Foundation
 
 // MARK: - Models
 
-enum DownloadItemStatus: String {
+enum DownloadItemStatus: String, Codable {
     case pending
     case downloading
     case finished
     case cancelled
 }
 
-struct DownloadItemModel {
+struct DownloadItemModel: Codable {
     let fileName: String
     let url: String
     var status: DownloadItemStatus
